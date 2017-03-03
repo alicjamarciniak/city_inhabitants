@@ -1,0 +1,21 @@
+WYMAGANIA:
+
+table count				| 20 / 15	| OK
+joins	left 			| 4 / 4		| OK
+		inner			|			| OK
+		right			|			| OK
+union					| 1 / 1		| OK 
+transactions			| 5 / 5		| OK
+functions				| 2 / 2		| OK
+full-text search		| 0 / 1		| OK
+triggers				| 0 / 2		| OK
+vievs					| 2 / 2		| OK
+constraints	unique		| 5 / 5		| OK
+			foreign 	| 			| OK
+subqueries				| 2 / 2		| OK
+like					| 2	/ 2		| OK
+between					| 0 / 2		| OK
+aggregation functions	| 1 / 3		| OK
+order					| 4 / 4		| OK
+
+

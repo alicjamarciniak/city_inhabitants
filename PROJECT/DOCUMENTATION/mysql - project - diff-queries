@@ -1,0 +1,132 @@
+
+
+
+SELECT * FROM `Inhabitants` WHERE `Inhabitants`.`FirstName` LIKE '%a' // zwraca kobiety
+
+
+SELECT * FROM `Inhabitants` WHERE `Inhabitants`.`LastName` LIKE 'O''%' // zwraca Irlandczykow
+
+// WYPISUJE MIESZKAŃCA I DRUGĄ OSOBĘ WRAZ Z RELACJĄ W JAKIEJ JEST DLA TEGO MIESZKAŃCA
+SELECT 
+I1.FirstName, 
+I1.LastName,  
+FamilyRelations.Relation,
+I2.FirstName, 
+I2.LastName,
+FamilyMembers.FamilyName
+FROM FamilyMembers 
+INNER JOIN Inhabitants AS I1
+	ON FamilyMembers.`Inhabitant1ID`=I1.`InhabitantID`
+INNER JOIN FamilyRelations
+	ON FamilyMembers.`FamilyRelationID`=FamilyRelations.`FamilyRelationID`
+INNER JOIN Inhabitants AS I2
+	ON FamilyMembers.`Inhabitant2ID`=I2.`InhabitantID`
+ORDER BY `I1`.`FirstName` ASC 
+
+// WYPISUJE CHOROBY DLA KAŻDEGO MIESZKAŃCA
+SELECT IH.FirstName, IH.LastName, IL.Name 
+FROM Inhabitants AS IH
+LEFT JOIN __InhabitantID_IlnessID AS __IN_IL
+ON IH.InhabitantID = __IN_IL.InhabitantID
+LEFT JOIN Ilnesses AS IL
+ON __IN_IL.IlnessID = IL.IlnessID
+
+// WYPISUJE WŁAŚCICIELI DLA KAŻDEGO ZWIERZAKA 
+SELECT P.Name, IH.FirstName, IH.LastName 
+FROM Inhabitants AS IH
+RIGHT JOIN __InhabitantID_PetID AS __IN_P
+ON IH.InhabitantID = __IN_P.InhabitantID
+RIGHT JOIN Pets AS P
+ON __IN_P.PetId = P.PetID
+
+// LICZBA ZWIERZĄT DANEGO GATUNKU
+UPDATE `Species` SET `Amount` = (SELECT COUNT(1) FROM `Pets`
+    WHERE `Pets`.`SpeciesID`=`Species`.`SpeciesID`)
+
+//LOWER CASE NA WSZYSTICH NAZWACH 
+SELECT Professions.ProffesionID, LCASE(Name), Professions.WorkPlaceID FROM `Professions`
+
+// UPER CASE NA WSZYSTKICH SZPITALACH
+SELECT Hospitals.HospitalID, UCASE(HospitalName) FROM `Hospitals` 
+
+// Wszyscy z wiekiem większym niż średnia
+SELECT * FROM Inhabitants WHERE Age > (SELECT AVG(Age) FROM Inhabitants)
+
+ 
+
+START TRANSACTION;
+
+	INSERT INTO Species (Name) 
+    VALUES ('Turtle');
+    
+    SELECT * FROM Species;
+    
+COMMIT;
+
+SELECT * FROM Species
+
+
+
+START TRANSACTION;
+INSERT INTO `PublicPlaces` (Name)
+VALUES ('Reastaurant');
+
+SET  @Restaurant = COUNT(1) FROM PublicPlaces WHERE Name = 'Restaurant';
+
+IF (SELECT COUNT(1) FROM PublicPlaces WHERE Name = 'Restaurant' > 1)
+	THEN
+    	ROLLBACK TRANSACTION AddRestaurant;
+ELSE
+	START
+		COMMIT TRANSACTION AddRestaurant;
+	END
+    
+END TRANSACTION
+
+SELECT D.DoctorID, I.FirstName, I.LastName, D.Specialization. H.Name
+FROM Inhabitants AS I
+INNER JOIN Doctors AS D
+ON D.InhabitantID = I.InhabitantID 
+INNER JOIN Hospitals AS H
+ON D.HospitalID = H.HospitalID;
+
+SELECT P.PlaceID, P.Name, P.Street, P.Number, P.Flat, C.Name Category
+FROM Places AS P
+INNER JOIN PlacesCategories AS C
+ON P.PlaceCategoryID = C.PlaceCategoryID;
+
+
+
+CREATE PROCEDURE updateAmountOfSpecies()
+BEGIN
+DECLARE exit handler for sqlexception
+BEGIN
+ROLLBACK;
+END;
+DECLARE exit handler for sqlwarning
+BEGIN
+ROLLBACK;
+END;
+START TRANSACTION;
+UPDATE `Species` SET `Amount` = (SELECT COUNT(1) FROM `Pets`
+    WHERE `Pets`.`SpeciesID`=`Species`.`SpeciesID`);
+COMMIT;
+END //
+
+CREATE PROCEDURE addNewPet(IN Name varchar(128), SpeciesID int))
+BEGIN
+DECLARE exit handler for sqlexception
+BEGIN
+ROLLBACK;
+END;
+DECLARE exit handler for sqlwarning
+BEGIN
+ROLLBACK;
+END;
+START TRANSACTION;
+INSERT INTO Pets (Name, SpeciesID) Values (Name, SpeciesID)
+
+COMMIT;
+END //
+
+
